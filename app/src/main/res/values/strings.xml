@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Alarm</string>
+    <string name="configuration">現在の設定</string>
+    <string name="notification_time">通知時間：</string>
+    <string name="state">状態：</string>
+    <string name="notification_start">通知開始</string>
+    <string name="notification_end">通知終了</string>
+    <string name="notification_suspended">通知停止中</string>
+    <string name="ten_minute">10秒</string>
+    <string name="thirty_minute">30秒</string>
+    <string name="sixty_minute">60秒</string>
+    <string name="notification_time_setting">通知時間設定</string>
+    <string name="ok">OK</string>
+    <string name="alarm">アラーム！</string>
+    <string name="notification">設定時間になりました</string>
+    <string name="no_reminder">再通知しない</string>
+    <string name="reminder">再通知する</string>
+    <string name="resetting">再設定</string>
+</resources>
