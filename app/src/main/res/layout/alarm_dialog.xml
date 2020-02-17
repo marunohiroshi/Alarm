@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:orientation="vertical"
     android:layout_gravity="center">
 
@@ -26,10 +26,10 @@
             android:layout_marginStart="30dp"
             android:layout_marginLeft="30dp"
             android:layout_marginTop="20dp"
+            android:button="@null"
             android:scaleX="2"
             android:scaleY="2"
-            android:text="@string/ten_minute"
-            android:button="@null"/>
+            android:text="@string/ten_minute" />
 
         <RadioButton
             android:id="@+id/radioButton_thirty_second"
@@ -61,8 +61,8 @@
         android:id="@+id/OK"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="250dp"
-        android:layout_marginLeft="250dp"
+        android:layout_marginStart="200dp"
+        android:layout_marginLeft="200dp"
         android:text="@string/ok"
         android:textSize="30sp" />
 
