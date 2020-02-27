@@ -2,6 +2,7 @@ package com.example.alarm;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.Menu;
@@ -16,7 +17,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
     static CountDownTimer cdt;
-    long time = 2000;//5秒
     //    long time = 0;
     TextView TextViewCountDown;
     TextView TextViewState;
@@ -31,6 +31,9 @@ public class MainActivity extends AppCompatActivity {
         TextViewState = findViewById(R.id.state);
         ButtonAlarmStart = findViewById(R.id.notification_start);
         ButtonAlarmEnd = findViewById(R.id.notification_end);
+        SharedPreferences sharedPreferences = getSharedPreferences("DataSave", Context.MODE_PRIVATE);
+        long time = sharedPreferences.getLong("KEY_TIME",0);
+
         TextViewCountDown.setText(String.format("%s秒", String.valueOf(time / 1000)));
 
         cdt = new CountDownTimer(time, 1000) {//(カウントする時間, カウントする間隔), time秒間を1秒間隔でカウントする
@@ -59,9 +62,8 @@ public class MainActivity extends AppCompatActivity {
         ButtonAlarmEnd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (TextViewState.equals("通知実行中")) {
+                if (TextViewState.getText().equals("通知実行中")) {
                     TextViewState.setText("通知停止中");
-
                 }
             }
         });
@@ -76,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (TextViewState.equals("通知実行中")) {
+        if (TextViewState.getText().equals("通知実行中")) {
             Context context = getApplicationContext();
             CharSequence text = "通知実行中に設定は使用できません";
             int duration = Toast.LENGTH_LONG;
