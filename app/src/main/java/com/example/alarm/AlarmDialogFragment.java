@@ -29,19 +29,19 @@ public class AlarmDialogFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        final Activity activity = getActivity();
+        Activity activity = getActivity();
         if (null == activity) {
             throw new IllegalStateException();
         }
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-        final View dialogView = LayoutInflater.from(activity).inflate(R.layout.alarm_dialog, null);
+        View dialogView = LayoutInflater.from(activity).inflate(R.layout.alarm_dialog, null);
 
         builder.setView(dialogView);
         RadioGroup radioGroup = dialogView.findViewById(R.id.radio_group);
         final RadioButton tenSecond = dialogView.findViewById(R.id.radioButton_ten_second);
         final RadioButton thirtySecond = dialogView.findViewById(R.id.radioButton_thirty_second);
         final RadioButton sixtySecond = dialogView.findViewById(R.id.radioButton_sixty_second);
-        Button OKButton = dialogView.findViewById(R.id.OK);
+        Button OKButton = dialogView.findViewById(R.id.OK_button);
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -61,11 +61,10 @@ public class AlarmDialogFragment extends DialogFragment {
         OKButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SharedPreferencesUtil.setTime(getActivity(), SharedPreferencesUtil.KEY_TIME, time);
+                SharedPreferencesUtil.setTime(getActivity(), time);
                 dismiss();
             }
         });
-
         return builder.create();
     }
 

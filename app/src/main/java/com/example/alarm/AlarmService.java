@@ -7,8 +7,9 @@ import android.os.CountDownTimer;
 import android.os.IBinder;
 
 public class AlarmService extends Service {
+    CountDownTimer countDownTimer;
 
-    public AlarmService(){
+    public AlarmService() {
     }
 
     //初期化
@@ -19,7 +20,7 @@ public class AlarmService extends Service {
     //サービスで実行させたい処理を記載
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        CountDownTimer countDownTimer = new CountDownTimer(SharedPreferencesUtil.getTime(getApplication(), SharedPreferencesUtil.KEY_TIME),1000) {
+        countDownTimer = new CountDownTimer(SharedPreferencesUtil.getTime(getApplication()), 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
             }
@@ -32,15 +33,16 @@ public class AlarmService extends Service {
             }
         };
         countDownTimer.start();
-        this.stopSelf();
         return START_STICKY;
     }
 
 
+    //破棄される際に呼ばれる
     @Override
     public void onDestroy() {
         super.onDestroy();
         stopSelf();
+        countDownTimer.cancel();
     }
 
     //bindService()で呼び出した場合、onStartCommand()ではなくonBind()が呼ばれる

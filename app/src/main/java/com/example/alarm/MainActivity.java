@@ -17,8 +17,6 @@ import androidx.appcompat.app.AppCompatActivity;
 public class MainActivity extends AppCompatActivity {
     TextView countDownTextView;
     TextView timerStateTextView;
-    Button alarmStartButton;
-    Button alarmEndButton;
     long time = 60000;//初期設定時間60秒
     Context context = this;
 
@@ -28,11 +26,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         countDownTextView = findViewById(R.id.notification_time);
         timerStateTextView = findViewById(R.id.state);
-        alarmStartButton = findViewById(R.id.notification_start);
-        alarmEndButton = findViewById(R.id.notification_end);
-        setTextViewCountDown();
+        Button alarmStartButton = findViewById(R.id.notification_start);
+        Button alarmEndButton = findViewById(R.id.notification_end);
+        setTextViewCountDown();//初期設定時間を記載
         final Intent intent = new Intent(this, AlarmService.class);
-
 
         //通知開始ボタン
         alarmStartButton.setOnClickListener(new View.OnClickListener() {
@@ -78,15 +75,17 @@ public class MainActivity extends AppCompatActivity {
     private class MyOnDismissListener implements DialogInterface.OnDismissListener {
         @Override
         public void onDismiss(DialogInterface dialog) {
-            time = SharedPreferencesUtil.getTime(context, SharedPreferencesUtil.KEY_TIME);
+            time = SharedPreferencesUtil.getTime(context);
             setTextViewCountDown();
         }
     }
 
+    //通知時間表示
     private void setTextViewCountDown() {
         countDownTextView.setText(String.format("%s秒", time / 1000));
     }
 
+    //状態表示
     public void setTimerStateTextView(String s) {
         timerStateTextView.setText(s);
     }
