@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,39 +15,40 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
-    CountDownTimer cdt;
-    TextView textViewCountDown;
-    TextView textViewState;
-    Button ButtonAlarmStart;
-    Button ButtonAlarmEnd;
+    TextView countDownTextView;
+    TextView timerStateTextView;
+    Button alarmStartButton;
+    Button alarmEndButton;
+    long time = 60000;//初期設定時間60秒
     Context context = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        textViewCountDown = findViewById(R.id.notification_time);
-        textViewState = findViewById(R.id.state);
-        ButtonAlarmStart = findViewById(R.id.notification_start);
-        ButtonAlarmEnd = findViewById(R.id.notification_end);
+        countDownTextView = findViewById(R.id.notification_time);
+        timerStateTextView = findViewById(R.id.state);
+        alarmStartButton = findViewById(R.id.notification_start);
+        alarmEndButton = findViewById(R.id.notification_end);
+        setTextViewCountDown();
+        final Intent intent = new Intent(this, AlarmService.class);
 
 
         //通知開始ボタン
-        ButtonAlarmStart.setOnClickListener(new View.OnClickListener() {
+        alarmStartButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                cdt.start();
-                textViewState.setText("通知実行中");
+                setTimerStateTextView("通知実行中");
+                context.startService(intent);
             }
         });
 
         //通知終了ボタン
-        ButtonAlarmEnd.setOnClickListener(new View.OnClickListener() {
+        alarmEndButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (textViewState.getText().equals("通知実行中")) {
-                    textViewState.setText("通知停止中");
-                }
+                setTimerStateTextView("通知停止中");
+                context.stopService(intent);
             }
         });
     }
@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (textViewState.getText().equals("通知実行中")) {
+        if (timerStateTextView.getText().equals("通知実行中")) {
             Context context = getApplicationContext();
             CharSequence text = "通知実行中に設定は使用できません";
             int duration = Toast.LENGTH_LONG;
@@ -78,21 +78,16 @@ public class MainActivity extends AppCompatActivity {
     private class MyOnDismissListener implements DialogInterface.OnDismissListener {
         @Override
         public void onDismiss(DialogInterface dialog) {
-            cdt = new CountDownTimer(SharedPreferencesUtil.getTime(context, SharedPreferencesUtil.KEY_TIME), 1000) {//(カウントする時間, カウントする間隔), time秒間を1秒間隔でカウントする
-                @Override
-                public void onTick(long millisUntilFinished) {
-                    //ある一定時間毎に実行する処理
-                }
-
-                @Override
-                public void onFinish() {
-                    //終わった時に実行する実行する処理
-                    Intent intent = new Intent(getApplication(), AlarmActivity.class);
-                    startActivity(intent);
-                    textViewState.setText("通知停止中");
-                }
-            };
-            textViewCountDown.setText(String.format("%s秒", String.valueOf(SharedPreferencesUtil.getTime(context, SharedPreferencesUtil.KEY_TIME) / 1000)));
+            time = SharedPreferencesUtil.getTime(context, SharedPreferencesUtil.KEY_TIME);
+            setTextViewCountDown();
         }
+    }
+
+    private void setTextViewCountDown() {
+        countDownTextView.setText(String.format("%s秒", time / 1000));
+    }
+
+    public void setTimerStateTextView(String s) {
+        timerStateTextView.setText(s);
     }
 }
