@@ -7,7 +7,7 @@ import android.os.CountDownTimer;
 import android.os.IBinder;
 
 public class AlarmService extends Service {
-    CountDownTimer countDownTimer;
+    private CountDownTimer countDownTimer;
 
     public AlarmService() {
     }

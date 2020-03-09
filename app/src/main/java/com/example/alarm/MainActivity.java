@@ -15,10 +15,10 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
-    TextView countDownTextView;
-    TextView timerStateTextView;
-    long time = 60000;//初期設定時間60秒
-    Context context = this;
+    private TextView countDownTextView;
+    private TextView timerStateTextView;
+    private long time = 60000;//初期設定時間60秒
+    private Context context = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
