@@ -59,7 +59,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (timerStateTextView.getText().equals("通知実行中")) {
-            Context context = getApplicationContext();
             CharSequence text = "通知実行中に設定は使用できません";
             int duration = Toast.LENGTH_LONG;
             Toast toast = Toast.makeText(context, text, duration);
@@ -81,12 +80,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //通知時間表示
-    private void setTextViewCountDown() {
+    void setTextViewCountDown() {
         countDownTextView.setText(String.format("%s秒", time / 1000));
     }
 
     //状態表示
-    public void setTimerStateTextView(String s) {
-        timerStateTextView.setText(s);
+    void setTimerStateTextView(String timerState) {
+        this.timerStateTextView.setText(timerState);
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        setTimerStateTextView("通知停止中");
+        setTextViewCountDown();
     }
 }

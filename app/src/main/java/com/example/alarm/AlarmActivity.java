@@ -39,9 +39,8 @@ public class AlarmActivity extends AppCompatActivity {
         reminder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplication(), AlarmService.class);
-                intent.putExtra("State","通知実行中");
-                startService(intent);
+                Intent alarmServiceIntent = new Intent(getApplication(), AlarmService.class);
+                startService(alarmServiceIntent);
                 finish();
             }
         });
