@@ -1,5 +1,6 @@
 package com.example.alarm;
 
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -92,7 +93,15 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onRestart() {
         super.onRestart();
-        setTimerStateTextView("通知停止中");
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo serviceInfo : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (AlarmService.class.getName().equals(serviceInfo.service.getClassName())) {
+                setTimerStateTextView("通知実行中");
+                // 実行中なら起動しない
+                return;
+            }
+            setTimerStateTextView("通知停止中");
+        }
         setTextViewCountDown();
     }
 }

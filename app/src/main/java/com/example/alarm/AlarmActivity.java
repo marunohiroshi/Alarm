@@ -9,10 +9,14 @@ import android.widget.Button;
 
 public class AlarmActivity extends AppCompatActivity {
 
+    private Intent alarmServiceIntent;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.alarm_activity);
+        alarmServiceIntent = new Intent(getApplication(), AlarmService.class);
+        stopService(alarmServiceIntent);
         Button noReminder = findViewById(R.id.no_reminder);
         Button reSetting = findViewById(R.id.resetting);
         Button reminder = findViewById(R.id.reminder);
@@ -39,7 +43,6 @@ public class AlarmActivity extends AppCompatActivity {
         reminder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent alarmServiceIntent = new Intent(getApplication(), AlarmService.class);
                 startService(alarmServiceIntent);
                 finish();
             }
