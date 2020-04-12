@@ -1,25 +1,33 @@
 package com.example.alarm;
 
-
 import android.app.Service;
 import android.content.Intent;
+import android.os.Binder;
+import android.util.Log;
+
 import android.os.CountDownTimer;
 import android.os.IBinder;
+import static android.content.ContentValues.TAG;
 
 public class AlarmService extends Service {
     private CountDownTimer countDownTimer;
 
-    public AlarmService() {
+    private final IBinder mBinder = new Binder();
+
+    //サービスに接続するためのBinder
+    public class AlarmServiceLocalBinder extends Binder {
+        //サービスの取得
+        AlarmService getService() {
+            return AlarmService.this;
+        }
     }
 
-    //初期化
-    @Override
-    public void onCreate() {
-    }
 
-    //サービスで実行させたい処理を記載
+    //開始時にコール
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    public IBinder onBind(Intent intent) {
+        // onBind()で返すBinder、返した後はonServiceConnectedの第二引数に渡される
+        Log.d(TAG, "onBind");
         countDownTimer = new CountDownTimer(SharedPreferencesUtil.getTime(getApplication()), 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
@@ -33,21 +41,47 @@ public class AlarmService extends Service {
             }
         };
         countDownTimer.start();
-        return START_STICKY;
+        return mBinder;
     }
 
+    //Service切断時に呼ばれる
+    //onBindをreturn trueでovrerideすると次回bind時にonRebindが呼ばれる
+    @Override
+    public boolean onUnbind(Intent intent) {
+        Log.d(TAG, "onUnbind");
+        return true;
+    }
+
+    //Unbind後に再接続される場合に呼ばれる
+    @Override
+    public void onRebind(Intent intent) {
+        onBind(intent);
+        super.onRebind(intent);
+
+    }
+
+    //Serviceのインスタンスがない状態で、クライアントがstartServiceまたはbindServiceを呼んだ時に
+    //Serviceのインスタンス生成で呼ばれる。すでにインスタンスが存在している場合は呼ばれない。
+    @Override
+    public void onCreate() {
+        Log.d(TAG, "onCreate");
+        super.onCreate();
+    }
+
+
+    //サービスで実行させたい処理を記載
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.d(TAG, "onStartCommand");
+        return START_STICKY;
+    }
 
     //破棄される際に呼ばれる
     @Override
     public void onDestroy() {
+        Log.d(TAG, "onDestroy");
         super.onDestroy();
         stopSelf();
         countDownTimer.cancel();
-    }
-
-    //bindService()で呼び出した場合、onStartCommand()ではなくonBind()が呼ばれる
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
     }
 }

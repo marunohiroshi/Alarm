@@ -1,10 +1,13 @@
 package com.example.alarm;
 
-import android.app.ActivityManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.telecom.ConnectionService;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,6 +23,9 @@ public class MainActivity extends AppCompatActivity {
     private TextView timerStateTextView;
     private long time = 60000;//初期設定時間60秒
     private Context context = this;
+    private Intent intent = null;
+    ServiceConnection mConnection;
+    AlarmService mAlarmService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,14 +36,34 @@ public class MainActivity extends AppCompatActivity {
         Button alarmStartButton = findViewById(R.id.notification_start);
         Button alarmEndButton = findViewById(R.id.notification_end);
         setTextViewCountDown();//初期設定時間を記載
-        final Intent intent = new Intent(this, AlarmService.class);
+        intent = new Intent(this, AlarmService.class);
+
+        mConnection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                //Serviceとの接続確立時に呼び出される
+                setTimerStateTextView("通知実行中");
+//                AlarmService.AlarmServiceLocalBinder binder = (AlarmService.AlarmServiceLocalBinder)service;
+//                mAlarmService = binder.getService();
+
+                AlarmService.AlarmServiceLocalBinder binder = (AlarmService.AlarmServiceLocalBinder) service;
+                MainActivity.this.mConnection = (ServiceConnection) binder.getService();
+
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+                setTimerStateTextView("通知停止中");
+            }
+        };
 
         //通知開始ボタン
         alarmStartButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 setTimerStateTextView("通知実行中");
-                context.startService(intent);
+
+                bindService(intent, mConnection, BIND_AUTO_CREATE);//バインドと同時にServiceの開始
             }
         });
 
@@ -46,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 setTimerStateTextView("通知停止中");
-                context.stopService(intent);
+                unbindService(mConnection);
             }
         });
     }
@@ -90,18 +116,22 @@ public class MainActivity extends AppCompatActivity {
         this.timerStateTextView.setText(timerState);
     }
 
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo serviceInfo : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (AlarmService.class.getName().equals(serviceInfo.service.getClassName())) {
-                setTimerStateTextView("通知実行中");
-                // 実行中なら起動しない
-                return;
-            }
-            setTimerStateTextView("通知停止中");
-        }
-        setTextViewCountDown();
+    public ServiceConnection getServiceConnection() {
+        return mConnection;
     }
+
+    //    @Override
+//    protected void onRestart() {
+//        super.onRestart();
+//        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+//        for (ActivityManager.RunningServiceInfo serviceInfo : manager.getRunningServices(Integer.MAX_VALUE)) {
+//            if (AlarmService.class.getName().equals(serviceInfo.service.getClassName())) {
+//                setTimerStateTextView("通知実行中");
+//                // 実行中なら起動しない
+//                return;
+//            }
+//            setTimerStateTextView("通知停止中");
+//        }
+//        setTextViewCountDown();
+//    }
 }

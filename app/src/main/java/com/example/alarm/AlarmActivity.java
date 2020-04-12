@@ -3,6 +3,7 @@ package com.example.alarm;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -10,6 +11,8 @@ import android.widget.Button;
 public class AlarmActivity extends AppCompatActivity {
 
     private Intent alarmServiceIntent;
+    ServiceConnection mConnection;
+    MainActivity mainActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +28,7 @@ public class AlarmActivity extends AppCompatActivity {
         noReminder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+//                unbindService();
                 finish();
             }
         });
@@ -43,7 +47,6 @@ public class AlarmActivity extends AppCompatActivity {
         reminder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startService(alarmServiceIntent);
                 finish();
             }
         });
