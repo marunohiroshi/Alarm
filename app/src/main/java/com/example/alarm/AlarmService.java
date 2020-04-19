@@ -7,6 +7,7 @@ import android.util.Log;
 
 import android.os.CountDownTimer;
 import android.os.IBinder;
+
 import static android.content.ContentValues.TAG;
 
 public class AlarmService extends Service {
@@ -15,19 +16,19 @@ public class AlarmService extends Service {
     private final IBinder mBinder = new LocalBinder();
 
     //サービスに接続するためのBinder
-    public class LocalBinder extends Binder {
+    class LocalBinder extends Binder {
         //サービスの取得
         AlarmService getService() {
             return AlarmService.this;
         }
     }
 
-
     //開始時にコール
     @Override
     public IBinder onBind(Intent intent) {
         // onBind()で返すBinder、返した後はonServiceConnectedの第二引数に渡される
         Log.d(TAG, "onBind");
+
         countDownTimer = new CountDownTimer(SharedPreferencesUtil.getTime(getApplication()), 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
@@ -41,7 +42,15 @@ public class AlarmService extends Service {
             }
         };
         countDownTimer.start();
-        return mBinder;
+        int numb = intent.getIntExtra("numb", 0);
+        Log.e("WillWolf", "numb-->" + numb);
+        if (numb == 1) {
+            Log.e("WillWolf", "local binder");
+            return new LocalBinder();
+        } else {
+            Log.e("WillWolf", "remote binder");
+            return mBinder;
+        }
     }
 
     //Service切断時に呼ばれる
