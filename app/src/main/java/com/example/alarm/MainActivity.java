@@ -21,11 +21,30 @@ import androidx.appcompat.app.AppCompatActivity;
 public class MainActivity extends AppCompatActivity {
     private TextView countDownTextView;
     private TextView timerStateTextView;
-    private long time = 60000;//初期設定時間60秒
+    private long time = 3000;//初期設定時間60秒
     private Context context = this;
     private Intent intent = null;
-    ServiceConnection mConnection;
     AlarmService mAlarmService;
+
+    ServiceConnection mConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            //Serviceとの接続確立時に呼び出される
+            // service引数には、Onbind()で返却したBinderが渡される
+            setTimerStateTextView("通知実行中");
+            mAlarmService = ((AlarmService.LocalBinder)service).getService();
+
+//            AlarmService.LocalBinder binder = (AlarmService.LocalBinder) service;
+//            MainActivity.this.mAlarmService = (AlarmService) binder.getService();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            // Serviceとの切断時に呼び出される。
+            setTimerStateTextView("通知停止中");
+            mAlarmService = null;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,25 +56,6 @@ public class MainActivity extends AppCompatActivity {
         Button alarmEndButton = findViewById(R.id.notification_end);
         setTextViewCountDown();//初期設定時間を記載
         intent = new Intent(this, AlarmService.class);
-
-        mConnection = new ServiceConnection() {
-            @Override
-            public void onServiceConnected(ComponentName name, IBinder service) {
-                //Serviceとの接続確立時に呼び出される
-                setTimerStateTextView("通知実行中");
-//                AlarmService.AlarmServiceLocalBinder binder = (AlarmService.AlarmServiceLocalBinder)service;
-//                mAlarmService = binder.getService();
-
-                AlarmService.AlarmServiceLocalBinder binder = (AlarmService.AlarmServiceLocalBinder) service;
-                MainActivity.this.mConnection = (ServiceConnection) binder.getService();
-
-            }
-
-            @Override
-            public void onServiceDisconnected(ComponentName name) {
-                setTimerStateTextView("通知停止中");
-            }
-        };
 
         //通知開始ボタン
         alarmStartButton.setOnClickListener(new View.OnClickListener() {
@@ -119,19 +119,4 @@ public class MainActivity extends AppCompatActivity {
     public ServiceConnection getServiceConnection() {
         return mConnection;
     }
-
-    //    @Override
-//    protected void onRestart() {
-//        super.onRestart();
-//        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-//        for (ActivityManager.RunningServiceInfo serviceInfo : manager.getRunningServices(Integer.MAX_VALUE)) {
-//            if (AlarmService.class.getName().equals(serviceInfo.service.getClassName())) {
-//                setTimerStateTextView("通知実行中");
-//                // 実行中なら起動しない
-//                return;
-//            }
-//            setTimerStateTextView("通知停止中");
-//        }
-//        setTextViewCountDown();
-//    }
 }

@@ -12,10 +12,10 @@ import static android.content.ContentValues.TAG;
 public class AlarmService extends Service {
     private CountDownTimer countDownTimer;
 
-    private final IBinder mBinder = new Binder();
+    private final IBinder mBinder = new LocalBinder();
 
     //サービスに接続するためのBinder
-    public class AlarmServiceLocalBinder extends Binder {
+    public class LocalBinder extends Binder {
         //サービスの取得
         AlarmService getService() {
             return AlarmService.this;
@@ -57,7 +57,6 @@ public class AlarmService extends Service {
     public void onRebind(Intent intent) {
         onBind(intent);
         super.onRebind(intent);
-
     }
 
     //Serviceのインスタンスがない状態で、クライアントがstartServiceまたはbindServiceを呼んだ時に
@@ -67,7 +66,6 @@ public class AlarmService extends Service {
         Log.d(TAG, "onCreate");
         super.onCreate();
     }
-
 
     //サービスで実行させたい処理を記載
     @Override
